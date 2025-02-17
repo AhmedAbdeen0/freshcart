@@ -2,7 +2,7 @@ import { useContext, useEffect, useState } from 'react';
 import { UserContext } from '../../context/User.context';
 import { jwtDecode } from 'jwt-decode';
 import axios from 'axios';
-import Loading from '../../compontents/loading/loading';
+import Loading from '../../compontents/Loading/Loading';
 
 export default function Orders() {
   const { token } = useContext(UserContext);
