@@ -2,7 +2,7 @@ import { useContext, useEffect } from "react";
 import { CartContext } from "../../context/Cart.context";
 import CartItem from "../../compontents/Cartitem/Cartitem";
 import { Link } from "react-router-dom";
-import Loading from "../../compontents/loading/loading";
+import Loading from "../../compontents/Loading/Loading";
 
 export default function Cart() {
   let { getCartProducts, cartInfo, clearCart } = useContext(CartContext);
