@@ -1,7 +1,7 @@
 import React from 'react';
 import { useQuery } from '@tanstack/react-query';
 import axios from 'axios';
-import Loading from '../loading/loading';
+import Loading from '../Loading/Loading';
 
 export default function Brands() {
   // Function to fetch all brands
