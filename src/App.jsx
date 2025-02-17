@@ -15,7 +15,7 @@ import Orders from './pages/Orders/Orders';
 import Brands from './compontents/Brands/Brands';
 import Categories from './compontents/Categories/Categories';
 import Products from './compontents/Products/Products';
-import ProductDetails from './compontents/ProductDetails/PRoductDetails';
+import ProductDetails from './compontents/ProductDetails/ProductDetails';
 
 
 const queryClient = new QueryClient();
