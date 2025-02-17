@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 import axios from 'axios';
-import Loading from '../loading/loading';
+import Loading from '../Loading/Loading';
 import toast from 'react-hot-toast';
 import { useState } from 'react';
 
