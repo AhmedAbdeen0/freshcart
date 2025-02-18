@@ -4,98 +4,118 @@ import { useContext, useState } from "react";
 import { object, string } from "yup";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
-import { UserContext } from "../context/User.context";
+import { UserContext } from "../../context/User.context";
 
 export default function Login() {
-  // استخدام السياق لإدارة حالة التوكن
   const { setToken } = useContext(UserContext);
+  const [inCorrectEmailorPasswordError, setInCorrectEmailorPasswordError] = useState(null);
   const navigate = useNavigate();
-  const [error, setError] = useState(null);
 
-  // التحقق من صحة البيانات
   const passwordRegex = /^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,}$/;
+
   const validationSchema = object({
-    email: string().required("Email is required").email("Invalid email address"),
+    email: string().required("Email is required").email("Email is invalid"),
     password: string()
       .required("Password is required")
-      .matches(passwordRegex, "Password must be strong"),
+      .matches(
+        passwordRegex,
+        "Password should be at least 8 characters, include one uppercase letter, one lowercase letter, one number, and one special character"
+      ),
   });
 
-  // إرسال البيانات إلى الخادم
-  async function handleLogin(values) {
-    const loadingToast = toast.loading("Logging in...");
+  async function sendDataToLogin(values) {
+    const loadingToastId = toast.loading("Waiting...");
     try {
-      const { data } = await axios.post(
-        "https://ecommerce.routemisr.com/api/v1/auth/signin",
-        values
-      );
-      if (data.message === "success") {
+      console.log("Sending data:", values);
+
+      const { data } = await axios.post("https://ecommerce.routemisr.com/api/v1/auth/signin", values, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+
+      console.log("API Response:", data);
+
+      if (data.message === "success" && data.token) {
         localStorage.setItem("token", data.token);
         setToken(data.token);
-        toast.success("Logged in successfully!");
-        navigate("/");
+        toast.success("User Logged in Successfully");
+        setTimeout(() => navigate("/"), 2000);
       }
     } catch (error) {
-      const message = error.response?.data?.message || "An error occurred!";
-      setError(message);
-      toast.error(message);
+      console.error("Error Details:", error);
+      if (error.response) {
+        const errorMsg = error.response.data.message || "Invalid credentials.";
+        toast.error(errorMsg);
+        setInCorrectEmailorPasswordError(errorMsg);
+      } else {
+        toast.error("Network error. Please try again later.");
+      }
     } finally {
-      toast.dismiss(loadingToast);
+      toast.dismiss(loadingToastId);
     }
   }
 
-  // إدارة النموذج باستخدام Formik
   const formik = useFormik({
-    initialValues: { email: "", password: "" },
+    initialValues: {
+      email: "",
+      password: "",
+    },
     validationSchema,
-    onSubmit: handleLogin,
+    onSubmit: sendDataToLogin,
   });
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gray-100">
-      <div className="w-full max-w-md p-8 space-y-6 bg-white shadow-lg rounded-xl">
-        <h2 className="text-2xl font-bold text-center text-gray-800">Login</h2>
-        <form onSubmit={formik.handleSubmit} className="space-y-4">
-          {/* إدخال البريد الإلكتروني */}
-          <div>
-            <label className="block mb-1 font-semibold text-gray-600">Email</label>
-            <input
-              type="email"
-              placeholder="Enter your email"
-              {...formik.getFieldProps("email")}
-              className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-400 focus:outline-none"
-            />
-            {formik.touched.email && formik.errors.email && (
-              <p className="text-red-500 text-sm mt-1">{formik.errors.email}</p>
-            )}
-          </div>
+    <>
+      <h1 className="text-xl text-slate-700 font-semibold mb-5">
+        <i className="fa-regular fa-circle-user mr-2"></i>Login
+      </h1>
 
-          {/* إدخال كلمة المرور */}
-          <div>
-            <label className="block mb-1 font-semibold text-gray-600">Password</label>
-            <input
-              type="password"
-              placeholder="Enter your password"
-              {...formik.getFieldProps("password")}
-              className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-400 focus:outline-none"
-            />
-            {formik.touched.password && formik.errors.password && (
-              <p className="text-red-500 text-sm mt-1">{formik.errors.password}</p>
-            )}
-          </div>
+      <form className="space-y-3" onSubmit={formik.handleSubmit}>
+        {/* Email Input */}
+        <div className="email">
+          <input
+            type="email"
+            placeholder="Email Address"
+            className="form-control w-full"
+            value={formik.values.email}
+            onChange={formik.handleChange}
+            onBlur={formik.handleBlur}
+            name="email"
+          />
+          {formik.errors.email && formik.touched.email && (
+            <p className="text-red-500 mt-1 text-sm">*{formik.errors.email}</p>
+          )}
+          {inCorrectEmailorPasswordError && (
+            <p className="text-red-500 mt-1 text-sm">*{inCorrectEmailorPasswordError}</p>
+          )}
+        </div>
 
-          {/* عرض خطأ تسجيل الدخول */}
-          {error && <p className="text-red-500 text-sm">{error}</p>}
+        {/* Password Input */}
+        <div className="password">
+          <input
+            type="password"
+            placeholder="Password"
+            className="form-control w-full"
+            value={formik.values.password}
+            onChange={formik.handleChange}
+            onBlur={formik.handleBlur}
+            name="password"
+          />
+          {formik.errors.password && formik.touched.password && (
+            <p className="text-red-500 mt-1 text-sm">*{formik.errors.password}</p>
+          )}
+        </div>
 
-          {/* زر تسجيل الدخول */}
-          <button
-            type="submit"
-            className="w-full py-2 text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition duration-300"
-          >
-            Login
-          </button>
-        </form>
-      </div>
-    </div>
+        {/* Submit Button */}
+        <button
+          type="submit"
+          className="btn w-full bg-primary-700 hover:bg-primary-800 text-white"
+          disabled={formik.isSubmitting}
+        >
+          {formik.isSubmitting ? "Logging in..." : "Login"}
+        </button>
+      </form>
+    </>
   );
 }
