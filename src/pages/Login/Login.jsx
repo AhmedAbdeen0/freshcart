@@ -1,7 +1,14 @@
+import axios from "axios";
+import { useFormik } from "formik";
+import { useContext, useState } from "react"; // تأكد من استيراد useContext هنا
+import { object, string } from "yup";
+import toast from "react-hot-toast";
+import { useNavigate } from "react-router-dom";
+import { UserContext } from "../../context/User.context";
+
 export default function Login() {
-  let { setToken } = useContext(UserContext);
+  let { setToken } = useContext(UserContext);  // استخدام useContext هنا
   const [inCorrectEmailorPasswordError, setInCorrectEmailorPasswordError] = useState(null);
-  const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
 
   const passwordRegex = /^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$ %^&*-]).{8,}$/;
@@ -80,7 +87,7 @@ export default function Login() {
         {/* Password Input */}
         <div className="password">
           <input
-            type={showPassword ? "text" : "password"}
+            type="password"
             placeholder="Password"
             className="form-control w-full"
             value={formik.values.password}
@@ -88,13 +95,6 @@ export default function Login() {
             onBlur={formik.handleBlur}
             name="password"
           />
-          <button
-            type="button"
-            onClick={() => setShowPassword(!showPassword)}
-            className="absolute right-3 top-1/2 transform -translate-y-1/2"
-          >
-            {showPassword ? "Hide" : "Show"}
-          </button>
           {formik.errors.password && formik.touched.password && (
             <p className="text-red-500 mt-1 text-sm">*{formik.errors.password}</p>
           )}
@@ -104,9 +104,8 @@ export default function Login() {
         <button
           type="submit"
           className="btn w-full bg-primary-700 hover:bg-primary-800 text-white"
-          disabled={formik.isSubmitting}
         >
-          {formik.isSubmitting ? "Logging in..." : "Login"}
+          Login
         </button>
       </form>
     </>
