@@ -67,36 +67,24 @@ export default function Navbar() {
         <div className="flex items-center gap-6">
           {/* Social Media Icons (Hidden on mobile) */}
           <ul className="hidden lg:flex gap-4 items-center text-xl">
-            <li>
-              <a href="https://instagram.com" target="_blank">
-                <i className="fa-brands fa-instagram"></i>
-              </a>
-            </li>
-            <li>
-              <a href="https://facebook.com" target="_blank">
-                <i className="fa-brands fa-facebook"></i>
-              </a>
-            </li>
-            <li>
-              <a href="https://tiktok.com" target="_blank">
-                <i className="fa-brands fa-tiktok"></i>
-              </a>
-            </li>
-            <li>
-              <a href="https://twitter.com" target="_blank">
-                <i className="fa-brands fa-twitter"></i>
-              </a>
-            </li>
-            <li>
-              <a href="https://linkedin.com" target="_blank">
-                <i className="fa-brands fa-linkedin"></i>
-              </a>
-            </li>
-            <li>
-              <a href="https://youtube.com" target="_blank">
-                <i className="fa-brands fa-youtube"></i>
-              </a>
-            </li>
+            {[
+              "instagram",
+              "facebook",
+              "tiktok",
+              "twitter",
+              "linkedin",
+              "youtube",
+            ].map((platform) => (
+              <li key={platform}>
+                <a
+                  href={`https://${platform}.com`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <i className={`fa-brands fa-${platform}`}></i>
+                </a>
+              </li>
+            ))}
           </ul>
 
           {/* Cart and Authentication Links */}
